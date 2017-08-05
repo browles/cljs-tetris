@@ -66,11 +66,6 @@
     :x 0
     :y (if (= O (:next-piece game)) 4 3)))
 
-(defn check-state [game]
-  (if (piece-collision? game)
-    (assoc game :lost true)
-    game))
-
 (defn place-piece [{:keys [board piece x y] :as game}]
   (let [temp (atom board)]
     (dorun (for [i (range (count piece))
@@ -94,11 +89,14 @@
         (update :score #(+ (* 10 n-cleared n-cleared) %)))))
 
 (defn process-piece [game]
-  (-> game
-      place-piece
-      clear-rows
-      get-new-piece
-      check-state))
+  (let [next (-> game
+                 place-piece
+                 clear-rows
+                 get-new-piece)
+        collision? (piece-collision? next)]
+    (if collision?
+      (assoc game :lost true)
+      next)))
 
 (defn left [game]
   (update game :y dec))
@@ -120,11 +118,6 @@
         game
         next))))
 
-(def try-left (partial try-action left))
-(def try-right (partial try-action right))
-(def try-rotate (partial try-action rotate))
-(def try-down (partial try-action down))
-
 (defn gravity [game]
   (if (:lost game)
     game
@@ -138,3 +131,16 @@
        (take-while (comp not piece-collision?))
        last
        process-piece))
+
+(def try-left (partial try-action left))
+(def try-right (partial try-action right))
+(defn try-rotate [game]
+  (if (:lost game)
+    game
+    (let [next (rotate game)]
+      (if (piece-collision? next)
+        (first (filter #(not= % next)
+                       [(try-left next)
+                        (try-right next)
+                        game]))
+        next))))

@@ -37,7 +37,9 @@ div {
   box-sizing: border-box;
 }
 
-.row { height: 50px; }
+.row {
+  height: 50px;
+}
 .cell {
   display: inline-block;
   width: 50px;
@@ -47,13 +49,12 @@ div {
 }
 
 .tetris-container {
-  width: 50%;
-  height: 70%;
+  width: 750px;
 }
 
 .score {
   position: absolute;
-  left: 100%;
+  right: 0%;
   display: inline-block;
 }
 
@@ -63,6 +64,7 @@ div {
 
 .board {
   border: 1px solid black;
+  border-radius: 3px;
   .empty { background: white; }
 }
 
@@ -74,8 +76,12 @@ div {
 
 .piece {
   z-index: 2;
-  position: absolute;
   .empty { opacity: 0; }
+}
+
+.next {
+  top: 100px;
+  right: 0%;
 }
 
 .blue { background: blue; }
